@@ -1,0 +1,33 @@
+python 3.5
+scipy
+numpy
+matplotlib
+networkx
+define a $lib environment variable to points to /lib directory
+compile /lib/kpsolvers/DPSolver.c and minknap.c (you will find the commands inside those files)
+
+
+-----------------------------
+A sketch of (one) possible way of designing the evolutionary algorithm  
+
+1. Breed n networks
+2. For each network
+		for m rounds:
+			apply pressure
+			reduce
+			solve
+			dump instances + solution + difficult score 
+			
+3. Select the top k networks, k << n, and breed n networks out of them 
+4. Go to 1
+
+
+-----------------------------
+How to score an instance: 
+you could judge an instance difficulty by looking into red/green/grey genes, but looking into disparity of benefits/damage values, 
+by looking into a "normalized" knapsack value, i.e. :
+			say there are 10 objects that each contribute a value of 2
+			the effective contribution of those is: 2*10/10 = 2
+			
+
+	

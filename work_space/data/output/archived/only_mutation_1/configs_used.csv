@@ -1,0 +1,2 @@
+Pressure,Tolerance,# Sampling Rounds, Generations, Population Size, Percent Survive, Mutation Percent, Crossover Percent, Starting Size
+[100.0],[10.0],100,1000,40,10,100,0,50

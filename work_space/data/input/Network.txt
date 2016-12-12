@@ -1,0 +1,1 @@
+Symbol1	Symbol2	Edge_Sign
