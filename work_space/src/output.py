@@ -4,15 +4,15 @@ import networkx as nx
 import numpy as np
 
 
-def parallel_configs(ID, output_dir, pressure, tolerance, pop_size, mutation_freq, percent_survive, start_size):
+def parallel_configs(ID, output_dir, pressure, tolerance, pop_size, mutation_freq, percent_survive, start_size, grow_freq, crossover_percent):
 
-    title = "Pressure, Tolerance, Population Size, Mutation Frequency, Percent Survive, Starting Size\n"
+    title = "Pressure, Tolerance, Population Size, Mutation Frequency, Percent Survive, Starting Size, Grow Freq, Crossover Percent\n"
 
     if not os.path.exists(output_dir + "/" + str(ID)):
-        os.makedirs(output_dir)
+        os.makedirs(output_dir+ "/" + str(ID))
     with open(output_dir + "/" + str(ID) + "/worker_configs.csv", 'w') as outfile:
         outfile.write(title)
-        outfile.write(str(pressure) + "," + str(tolerance) + "," + str(pop_size) + "," + str(mutation_freq) + "," + str(percent_survive) + "," + str(start_size))
+        outfile.write(str(pressure) + "," + str(tolerance) + "," + str(pop_size) + "," + str(mutation_freq) + "," + str(percent_survive) + "," + str(start_size)+ "," + str(grow_freq) + "," + str(crossover_percent))
 
 def net(ID, indiv, out_dir):
     if (indiv.net.edges()):
@@ -101,12 +101,16 @@ def outro_csv(output_dir, gens, output_freq):
             line[-1] = piece[0]
             lines.append(line)
 
-        avg_change = [0 for j in range(num_features)]
+        avg_change = [0 for j in range(num_features+1)]
 
         for i in range(len(lines)-1):
             for j in range(num_features):
                 avg_change[j] += (float(lines[i+1][j]) - float(lines[i][j])) / (gens*output_freq)
-        for j in range(num_features):
+
+            #spc to change in fitness, NOT generalized
+            #where 1 is RGGR max and 3 is ETB max
+            avg_change[-1] =  avg_change[1] + avg_change[3]
+        for j in range(num_features+1):  #+1 for above added feature
             avg_change[j] /= len(lines)-1
 
     with open(output_dir + "/outro_info.csv", 'w') as outro_file:
@@ -114,9 +118,10 @@ def outro_csv(output_dir, gens, output_freq):
         row = []
         for j in range(num_features): #hopefully num_features in conserved from prev block
             row.append("Avg change of " + titles[j])
+        row.append("Avg change in fitness")
         output.writerow(row)
         row = []
-        for j in range(num_features):
+        for j in range(num_features+1): #+1 for added feature
             row.append(str(avg_change[j]))
         output.writerow(row)
 
@@ -138,9 +143,8 @@ def to_csv(population, output_dir, popn_info):
             output = csv.writer(output_file)
 
 
-            if (len(population[0].net.nodes()) != len(population[1].net.nodes())):
-                print("WARNING output(): nets are not same size. " +
-                      str(len(population[0].net.nodes())) + ", " + str(len(population[1].net.nodes())))
+            #if (len(population[0].net.nodes()) != len(population[1].net.nodes())):
+                #print("WARNING output(): nets are not same size. " + str(len(population[0].net.nodes())) + ", " + str(len(population[1].net.nodes())))
 
             for p in range(len(population)):
                 net_info = []
